@@ -1,0 +1,5 @@
+timestamp,source_ip,destination_ip,protocol,destination_port,failed_logins,event_type,Label
+2026-11-02 10:00,192.0.2.10,10.0.0.5,TCP,443,0,normal web traffic,BENIGN
+2026-11-02 10:05,198.51.100.23,10.0.0.8,TCP,22,12,repeated failed login,Brute Force
+2026-11-02 10:10,203.0.113.9,10.0.0.9,TCP,80,0,high packet rate,DoS
+2026-11-02 10:15,192.0.2.44,10.0.0.12,UDP,53,0,DNS request,BENIGN
