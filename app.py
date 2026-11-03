@@ -49,7 +49,7 @@ def detect(row):
     return score,severity,"; ".join(why) if why else "No configured suspicious pattern matched"
 def analyse(df):
     out=df.copy()
-    vals=out.apply(detect,axis=1,result_type="expand")
+vals=out.apply(detect,axis=1,result_type="expand")
     out["risk_score"]=vals[0]; out["severity"]=vals[1]; out["reason"]=vals[2]
     out.insert(0,"row_number",range(1,len(out)+1))
     return out
@@ -71,6 +71,18 @@ if page=="Dashboard":
     st.write("Upload CSV → Analyse security events → Review risk score → Create incident → Verify hash-linked ledger.")
     if incidents: st.dataframe(pd.DataFrame(incidents)[["incident_id","created_at","severity","risk_score","status","description"]],use_container_width=True)
     else: st.info("No incidents yet. Open Analyse Data and load the sample CSV.")
+
+    st.divider()
+    with st.expander("⚠️ Reset Demo / Clear All Data"):
+        st.warning("This permanently clears all saved incidents and ledger records from this app's local data files. It cannot be undone.")
+        confirm_reset = st.checkbox("I understand — delete all incidents and ledger records.")
+        if st.button("🗑️ Reset All Data", type="primary", disabled=not confirm_reset):
+            write(INC, [])
+            write(LED, [])
+            for key in ("df", "result"):
+                st.session_state.pop(key, None)
+            st.success("All demo data has been cleared.")
+            st.rerun()
 elif page=="Analyse Data":
     st.subheader("Analyse security data")
     sample=ROOT/"sample_data"/"sample_security_events.csv"
@@ -120,12 +132,4 @@ elif page=="Ledger Verification":
     else: st.info("Ledger empty. Create an incident first.")
 else:
     st.subheader("About")
-    st.markdown("""
-- **Python:** application logic
-- **Streamlit:** browser-based interface
-- **Pandas:** CSV reading and processing
-- **Rule-based heuristics:** demo risk scoring
-- **SHA-256 + JSON:** local hash-linked incident ledger
-
-CICIDS2017 contains network-flow features and traffic labels (e.g. BENIGN and attack categories), not employee passwords. This app can read its CSV after upload; the included sample is synthetic. This build does not train an ML model, capture live packets, automatically block attackers, or run a distributed blockchain.
-""")
+    st.markdown(""" - **Python:** application logic - **Streamlit:** browser-based interface - **Pandas:** CSV reading and processing - **Rule-based heuristics:** demo risk scoring - **SHA-256 + JSON:** local hash-linked incident ledger CICIDS2017 contains network-flow features and traffic labels (e.g. BENIGN and attack categories), not employee passwords. This app can read its CSV after upload; the included sample is synthetic. This build does not train an ML model, capture live packets, automatically block attackers, or run a distributed blockchain. """)
